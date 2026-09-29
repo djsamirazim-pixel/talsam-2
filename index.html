@@ -652,6 +652,36 @@
             document.getElementById(sectionId).classList.add('active');
             btn.classList.add('active');
         }
-    </script>
+    </script> 
+    <script>
+  document.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Inputlardan daxil edilən məlumatları götürürük
+    const inputs = document.querySelectorAll('form input');
+    const full_name = inputs[0]?.value || '';
+    const age = inputs[1]?.value || '';
+    const email = inputs[2]?.value || '';
+    const password = inputs[3]?.value || '';
+
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name, age, email, password })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Təbrik edirik! Uğurla qeydiyyatdan keçdiniz.");
+      } else {
+        alert("Xəta baş verdi: " + result.error);
+      }
+    } catch (err) {
+      alert("Şəbəkə xətası baş verdi. Yenidən cəhd edin.");
+    }
+  });
+</script>
 </body>
 </html>
