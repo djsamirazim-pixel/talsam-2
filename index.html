@@ -118,90 +118,91 @@
   </div>
 
   <script>
-    let uploadedAvatarBase64 = "https://via.placeholder.com/150";
+  let uploadedAvatarBase64 = "https://via.placeholder.com/150";
 
-    function handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) { uploadedAvatarBase64 = e.target.result; };
-        reader.readAsDataURL(file);
-      }
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedAvatarBase64 = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
-async function register() {
-  const name = document.getElementById('regName')?.value || '';
-  const age = document.getElementById('regAge')?.value || '';
-  const email = document.getElementById('regEmail')?.value || '';
-  const password = document.getElementById('regPass')?.value || '';
-
-  if (!name || !email || !password) {
-    alert("Lütfən Ad, E-poçt və Şifrə xanalarını doldurun!");
-    return;
   }
 
-  try {
-    const { data, error } = await supabase
-      .from('users')
-      .insert([
-        { full_name: name, age: age ? parseInt(age) : null, email: email, password: password }
-      ]);
+  async function register() {
+    const name = document.getElementById('regName')?.value || '';
+    const age = document.getElementById('regAge')?.value || '';
+    const email = document.getElementById('regEmail')?.value || '';
+    const password = document.getElementById('regPass')?.value || '';
 
+    if (!name || !email || !password) {
+      alert("Lütfən Ad, E-poçt və Şifrə xanalarını doldurun!");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .insert([
+          { full_name: name, age: age ? parseInt(age) : null, email: email, password: password }
+        ]);
+
+      if (error) {
+        alert("Xəta baş verdi: " + error.message);
+      } else {
+        alert("Təbrik edirik! Qeydiyyatınız uğurla Supabase bazasına yazıldı.");
+        document.getElementById('userName').innerText = name;
+        document.getElementById('userAge').innerText = "Yaş: " + age;
+        if (uploadedAvatarBase64) {
+          document.getElementById('userAvatar').src = uploadedAvatarBase64;
+        }
+        document.getElementById('authModal').style.display = 'none';
+        loadUsers();
+      }
+    } catch (err) {
+      alert("Şəbəkə xətası baş verdi.");
+    }
+  }
+
+  async function loadUsers() {
+    const { data: users, error } = await supabase.from('users').select('*');
     if (error) {
-      alert("Xəta baş verdi: " + error.message);
-    } else {
-      alert("Təbrik edirik! Qeydiyyatınız uğurla Supabase bazasına yazıldı.");
-      document.getElementById('userName').innerText = name;
-      document.getElementById('userAge').innerText = "Yaş: " + age;
-      if (uploadedAvatarBase64) {
-        document.getElementById('userAvatar').src = uploadedAvatarBase64;
-      }
-      document.getElementById('authModal').style.display = 'none';
+      console.error("Xəta:", error);
+      return;
     }
-  } catch (err) {
-    alert("Şəbəkə xətası baş verdi.");
-  }
-}
-    function showSection(sectionId, btn) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(sectionId).classList.add('active');
-      btn.classList.add('active');
-    }
-  </script// Bütün istifadəçiləri Supabase-dən çəkib göstərən funksiya
-async function loadUsers() {
-  const { data: users, error } = await supabase.from('users').select('*');
-  if (error) {
-    console.error("Xəta:", error);
-    return;
-  }
 
-  const userGrid = document.getElementById('userGrid');
-  if (!userGrid) return;
+    const userGrid = document.getElementById('userGrid');
+    if (!userGrid) return;
 
-  userGrid.innerHTML = '';
-  users.forEach(u => {
-    userGrid.innerHTML += `
-      <div class="user-card">
-        <img src="https://via.placeholder.com/150" alt="Avatar">
-        <div class="user-info">
-          <h4>${u.full_name}</h4>
-          <p>Yaş: ${u.age || '-'}</p>
+    userGrid.innerHTML = '';
+    users.forEach(u => {
+      userGrid.innerHTML += `
+        <div class="user-card">
+          <img src="https://via.placeholder.com/150" alt="Avatar">
+          <div class="user-info">
+            <h4>${u.full_name}</h4>
+            <p>Yaş: ${u.age || '-'}</p>
+          </div>
         </div>
-      </div>
-    `;
-  });
-}
-
-// "Bütün İstifadəçilər" bölməsinə keçəndə siyahını yeniləyək
-const originalShowSection = showSection;
-showSection = function(sectionId, btn) {
-  originalShowSection(sectionId, btn);
-  if (sectionId === 'friends') {
-    loadUsers();
+      `;
+    });
   }
-};
 
-// Səhifə açılan kimi istifadəçiləri yüklə
-document.addEventListener('DOMContentLoaded', loadUsers);>
+  function showSection(sectionId, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    btn.classList.add('active');
+
+    if (sectionId === 'friends') {
+      loadUsers();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadUsers);
+</script>>
+  
 </body>
 </html>
