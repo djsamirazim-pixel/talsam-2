@@ -510,29 +510,6 @@
             }
         }
 
-        // Qeydiyyat
-        function register() {
-            const name = document.getElementById('regName').value;
-            const age = document.getElementById('regAge').value;
-
-            if(name && age) {
-                document.getElementById('userName').innerText = name;
-                document.getElementById('userAge').innerText = "Yaş: " + age;
-                document.getElementById('userAvatar').src = uploadedAvatarBase64;
-                document.getElementById('authModal').style.display = 'none';
-
-                renderUsers();
-                renderChatFriends();
-
-                // Simulyasiya: 3 saniyə sonra istək/mesaj gəlməsi
-                setTimeout(() => {
-                    receiveNewMessage("Salam! Oyuna ne vaxt giririk?");
-                }, 3000);
-            } else {
-                alert("Lütfən ad və yaş qeyd edin!");
-            }
-        }
-
         // 2. İstifadəçilər Bölməsi
         function renderUsers() {
             const grid = document.getElementById('userGrid');
