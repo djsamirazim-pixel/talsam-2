@@ -389,11 +389,19 @@
 
     <!-- Qeydiyyat Pəncərəsi -->
     <div class="auth-container" id="authModal">
-        <div class="auth-box">
-            <h2>Qeydiyyat</h2>
-            <input type="text" id="regName" placeholder="Ad və Soyad">
-            <input type="number" id="regAge" placeholder="Yaş">
-            
+  <div class="auth-box">
+    <h2>Qeydiyyat</h2>
+    <input type="text" id="regName" placeholder="Ad və Soyad">
+    <input type="number" id="regAge" placeholder="Yaş">
+    <label class="file-upload-label">
+      <i class="fa-solid fa-image"></i> Profil Şəkli Seçin (JPG/PNG)
+      <input type="file" id="regImgFile" accept="image/jpeg, image/png" onchange="handleImageUpload(event)">
+    </label>
+    <input type="email" id="regEmail" placeholder="E-poçt ünvanı">
+    <input type="password" id="regPass" placeholder="Şifrə">
+    <button onclick="register()">Hesab Yaradın</button>
+  </div>
+</div>
             <!-- JPG/PNG Yükləmə Düyməsi -->
             <label class="file-upload-label">
                 <i class="fa-solid fa-image"></i> Profil Şəkli Seçin (JPG/PNG)
@@ -670,6 +678,5 @@
       });
     }
   });
-</script>
 </body>
 </html>
