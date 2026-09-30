@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GamePortal - Oyun və Sosial Platforma</title>
   
-  <!-- Supabase JS Library & Initialization -->
+  <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const supabaseUrl = 'https://ndmnyzzadrhlelkxfrgu.supabase.co';
@@ -15,246 +15,93 @@
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', -apple-system, sans-serif;
-    }
-    body {
-      background-color: #0b0f19;
-      color: #e2e8f0;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    body { background-color: #0b0f19; color: #e2e8f0; display: flex; height: 100vh; overflow: hidden; }
+    
     .auth-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(11, 15, 25, 0.95);
-      backdrop-filter: blur(8px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(8px);
+      display: flex; justify-content: center; align-items: center; z-index: 1000;
     }
     .auth-box {
-      background: #151c2c;
-      border: 1px solid #1e293b;
-      padding: 35px;
-      border-radius: 16px;
-      width: 400px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      text-align: center;
+      background: #151c2c; border: 1px solid #1e293b; padding: 35px;
+      border-radius: 16px; width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center;
     }
-    .auth-box h2 {
-      margin-bottom: 20px;
-      color: #38bdf8;
-      font-size: 24px;
-    }
-    .auth-box input[type="text"],
-    .auth-box input[type="number"],
-    .auth-box input[type="email"],
-    .auth-box input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: #fff;
-      outline: none;
-    }
-    .file-upload-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px;
-      margin: 10px 0;
-      background: #1e293b;
-      border: 1px dashed #38bdf8;
-      border-radius: 8px;
-      color: #38bdf8;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .file-upload-label input {
-      display: none;
+    .auth-box h2 { margin-bottom: 20px; color: #38bdf8; font-size: 24px; }
+    .auth-box input {
+      width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px;
+      border: 1px solid #334155; background: #0f172a; color: #fff; outline: none;
     }
     .auth-box button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
+      width: 100%; padding: 12px; margin-top: 12px;
       background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
+      color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
     }
-    .sidebar {
-      width: 280px;
-      background-color: #111827;
-      border-right: 1px solid #1f2937;
-      display: flex;
-      flex-direction: column;
-      padding: 24px 16px;
+    .toggle-auth {
+      margin-top: 15px; color: #38bdf8; cursor: pointer; font-size: 14px; text-decoration: underline;
     }
-    .sidebar .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #38bdf8;
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 32px;
-      padding-left: 8px;
-    }
+    
+    .sidebar { width: 280px; background-color: #111827; border-right: 1px solid #1f2937; display: flex; flex-direction: column; padding: 24px 16px; }
+    .sidebar .brand { display: flex; align-items: center; gap: 12px; color: #38bdf8; font-size: 20px; font-weight: 700; margin-bottom: 32px; padding-left: 8px; }
     .nav-btn {
-      background: transparent;
-      color: #9ca3af;
-      border: none;
-      padding: 14px 16px;
-      text-align: left;
-      font-size: 15px;
-      font-weight: 500;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: relative;
-      transition: all 0.2s;
+      background: transparent; color: #9ca3af; border: none; padding: 14px 16px;
+      text-align: left; font-size: 15px; font-weight: 500; border-radius: 10px;
+      cursor: pointer; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; transition: all 0.2s;
     }
-    .nav-btn:hover {
-      background-color: #1f2937;
-      color: #f3f4f6;
-    }
-    .nav-btn.active {
-      background: linear-gradient(90deg, #0284c7, #2563eb);
-      color: #ffffff;
-      font-weight: 600;
-    }
-    .badge {
-      background: #ef4444;
-      color: white;
-      font-size: 11px;
-      font-weight: bold;
-      padding: 2px 7px;
-      border-radius: 12px;
-      margin-left: auto;
-      display: none;
-    }
-    .main-content {
-      flex: 1;
-      padding: 32px;
-      overflow-y: auto;
-      background: #0b0f19;
-    }
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: #f8fafc;
-      margin-bottom: 24px;
-    }
+    .nav-btn:hover { background-color: #1f2937; color: #f3f4f6; }
+    .nav-btn.active { background: linear-gradient(90deg, #0284c7, #2563eb); color: #ffffff; font-weight: 600; }
+    
+    .main-content { flex: 1; padding: 32px; overflow-y: auto; background: #0b0f19; }
+    .section { display: none; }
+    .section.active { display: block; }
+    h1 { font-size: 28px; font-weight: 700; color: #f8fafc; margin-bottom: 24px; }
+    
     .profile-card {
-      background: #111827;
-      border: 1px solid #1f2937;
-      padding: 32px;
-      border-radius: 16px;
-      max-width: 420px;
-      text-align: center;
+      background: #111827; border: 1px solid #1f2937; padding: 32px;
+      border-radius: 16px; max-width: 420px; text-align: center;
     }
-    .profile-avatar {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #0284c7;
-      margin-bottom: 16px;
-    }
-    .user-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-    .user-card {
-      background: #111827;
-      border: 1px solid #1f2937;
-      padding: 16px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .user-card img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .user-info h4 {
-      color: #f8fafc;
-      margin-bottom: 4px;
-    }
-    .user-info p {
-      color: #9ca3af;
-      font-size: 13px;
-    }
+    .profile-avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #0284c7; margin-bottom: 16px; }
+    
+    .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .user-card { background: #111827; border: 1px solid #1f2937; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 14px; }
+    .user-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
   </style>
 </head>
 <body>
 
-  <!-- Qeydiyyat Modalı -->
+  <!-- Qeydiyyat və Daxil olma Modalı -->
   <div class="auth-container" id="authModal">
-    <div class="auth-box">
+    <!-- Qeydiyyat Formu -->
+    <div class="auth-box" id="registerBox">
       <h2>Qeydiyyatdan Keçin</h2>
-      <input type="text" id="regName" placeholder="Ad və Soyad" required>
+      <input type="text" id="regName" placeholder="Ad və Soyad">
       <input type="number" id="regAge" placeholder="Yaşınız">
-      <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
-      <input type="password" id="regPass" placeholder="Şifrə" required>
-      
-      <label class="file-upload-label">
-        <i class="fa-solid fa-image"></i> Profil Şəkli Seçin
-        <input type="file" id="regAvatar" accept="image/*" onchange="handleImageUpload(event)">
-      </label>
-      
+      <input type="email" id="regEmail" placeholder="E-poçt ünvanı">
+      <input type="password" id="regPass" placeholder="Şifrə">
       <button onclick="register()">Hesab Yaradın</button>
+      <div class="toggle-auth" onclick="toggleAuth('login')">Artıq hesabınız var? Daxil olun</div>
+    </div>
+
+    <!-- Daxil Olma Formu -->
+    <div class="auth-box" id="loginBox" style="display: none;">
+      <h2>Daxil Olun</h2>
+      <input type="email" id="loginEmail" placeholder="E-poçt ünvanı">
+      <input type="password" id="loginPass" placeholder="Şifrə">
+      <button onclick="login()">Daxil Ol</button>
+      <div class="toggle-auth" onclick="toggleAuth('register')">Hesabınız yoxdur? Qeydiyyatdan keçin</div>
     </div>
   </div>
 
   <!-- Sol Menyu -->
   <div class="sidebar">
-    <div class="brand">
-      <i class="fa-solid fa-gamepad"></i> GamePortal
-    </div>
-    <button class="nav-btn active" onclick="showSection('profile', this)">
-      <i class="fa-solid fa-user"></i> Profilim
-    </button>
-    <button class="nav-btn" onclick="showSection('friends', this)">
-      <i class="fa-solid fa-users"></i> Bütün İstifadəçilər
-    </button>
-    <button class="nav-btn" onclick="showSection('messages', this)">
-      <i class="fa-solid fa-envelope"></i> Mesajlar
-      <span class="badge" id="msgBadge">0</span>
-    </button>
+    <div class="brand"><i class="fa-solid fa-gamepad"></i> GamePortal</div>
+    <button class="nav-btn active" onclick="showSection('profile', this)"><i class="fa-solid fa-user"></i> Profilim</button>
+    <button class="nav-btn" onclick="showSection('friends', this)"><i class="fa-solid fa-users"></i> Bütün İstifadəçilər</button>
+    <button class="nav-btn" onclick="logout()" style="margin-top: auto; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Çıxış Et</button>
   </div>
 
   <!-- Əsas Məzmun -->
   <div class="main-content">
-    
-    <!-- Profil Bölməsi -->
     <div id="profile" class="section active">
       <h1>Profil Məlumatları</h1>
       <div class="profile-card">
@@ -264,105 +111,111 @@
       </div>
     </div>
 
-    <!-- Bütün İstifadəçilər Bölməsi -->
     <div id="friends" class="section">
       <h1>Bütün İstifadəçilər</h1>
-      <div class="user-grid" id="userGrid">
-        <!-- İstifadəçilər dinamik yüklənəcək -->
-      </div>
+      <div class="user-grid" id="userGrid"></div>
     </div>
-
-    <!-- Mesajlar Bölməsi -->
-    <div id="messages" class="section">
-      <h1>Mesajlar</h1>
-      <p style="color: #9ca3af;">Canlı mesajlaşma tezliklə aktiv olacaq.</p>
-    </div>
-
   </div>
 
   <script>
-    let uploadedAvatarBase64 = "https://via.placeholder.com/150";
-
-    function handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          uploadedAvatarBase64 = e.target.result;
-        };
-        reader.readAsDataURL(file);
+    function toggleAuth(mode) {
+      if (mode === 'login') {
+        document.getElementById('registerBox').style.display = 'none';
+        document.getElementById('loginBox').style.display = 'block';
+      } else {
+        document.getElementById('registerBox').style.display = 'block';
+        document.getElementById('loginBox').style.display = 'none';
       }
     }
 
+    // Qeydiyyat
     async function register() {
-      const name = document.getElementById('regName')?.value || '';
-      const age = document.getElementById('regAge')?.value || '';
-      const email = document.getElementById('regEmail')?.value || '';
-      const password = document.getElementById('regPass')?.value || '';
+      const name = document.getElementById('regName').value;
+      const age = document.getElementById('regAge').value;
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPass').value;
 
       if (!name || !email || !password) {
-        alert("Lütfən Ad, E-poçt və Şifrə xanalarını doldurun!");
+        alert("Lütfən bütün xanaları doldurun!");
         return;
       }
 
-      try {
-        const { data, error } = await supabase
-          .from('users')
-          .insert([
-            { full_name: name, age: age ? parseInt(age) : null, email: email, password: password }
-          ]);
+      const { data, error } = await supabase.from('users').insert([
+        { full_name: name, age: age ? parseInt(age) : null, email: email, password: password }
+      ]).select();
 
-        if (error) {
-          alert("Xəta baş verdi: " + error.message);
-        } else {
-          alert("Təbrik edirik! Qeydiyyatınız uğurla tamamlandı.");
-          
-          const userData = { name: name, age: age, avatar: uploadedAvatarBase64 };
-          localStorage.setItem('currentUser', JSON.stringify(userData));
-
-          document.getElementById('userName').innerText = name;
-          document.getElementById('userAge').innerText = "Yaş: " + age;
-          if (uploadedAvatarBase64) {
-            document.getElementById('userAvatar').src = uploadedAvatarBase64;
-          }
-          document.getElementById('authModal').style.display = 'none';
-          
-          await loadUsers();
-        }
-      } catch (err) {
-        alert("Şəbəkə xətası baş verdi.");
+      if (error) {
+        alert("Xəta: " + error.message);
+      } else {
+        alert("Qeydiyyat uğurludur!");
+        setUserSession({ name: name, age: age, email: email });
       }
     }
 
+    // Daxil Olma (Login)
+    async function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPass').value;
+
+      if (!email || !password) {
+        alert("Lütfən e-poçt və şifrənizi daxil edin!");
+        return;
+      }
+
+      const { data: users, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .eq('password', password);
+
+      if (error || !users || users.length === 0) {
+        alert("E-poçt və ya şifrə yanlışdır!");
+      } else {
+        const u = users[0];
+        setUserSession({ name: u.full_name, age: u.age, email: u.email });
+      }
+    }
+
+    // Sessiyanı yaddaşda saxla
+    function setUserSession(userData) {
+      localStorage.setItem('currentUser', JSON.stringify(userData));
+      applyUserSession(userData);
+      document.getElementById('authModal').style.display = 'none';
+      loadUsers();
+    }
+
+    function applyUserSession(user) {
+      document.getElementById('userName').innerText = user.name || 'İstifadəçi';
+      document.getElementById('userAge').innerText = "Yaş: " + (user.age || '-');
+    }
+
+    // Çıxış et
+    function logout() {
+      localStorage.removeItem('currentUser');
+      location.reload();
+    }
+
+    // Bütün İstifadəçiləri Çək
     async function loadUsers() {
-      try {
-        const { data: users, error } = await supabase.from('users').select('*');
-        if (error) {
-          console.error("Supabase xətası:", error.message);
-          return;
-        }
+      const { data: users, error } = await supabase.from('users').select('*');
+      const userGrid = document.getElementById('userGrid');
+      if (!userGrid) return;
 
-        const userGrid = document.getElementById('userGrid');
-        if (!userGrid) return;
-
-        userGrid.innerHTML = '';
-        if (users && users.length > 0) {
-          users.forEach(u => {
-            userGrid.innerHTML += `
-              <div class="user-card">
-                <img src="${u.avatar_url || 'https://via.placeholder.com/150'}" alt="Avatar">
-                <div class="user-info">
-                  <h4>${u.full_name || 'İstifadəçi'}</h4>
-                  <p>Yaş: ${u.age || '-'}</p>
-                </div>
+      userGrid.innerHTML = '';
+      if (users && users.length > 0) {
+        users.forEach(u => {
+          userGrid.innerHTML += `
+            <div class="user-card">
+              <img src="https://via.placeholder.com/150" alt="Avatar">
+              <div class="user-info">
+                <h4>${u.full_name || 'İstifadəçi'}</h4>
+                <p>Yaş: ${u.age || '-'}</p>
               </div>
-            `;
-          });
-        } else {
-          userGrid.innerHTML = '<p style="color: #9ca3af;">Hələ heç bir istifadəçi qeydiyyatdan keçməyib.</p>';
-        }
-      } catch (e) {
-        console.error(e);
+            </div>
+          `;
+        });
+      } else {
+        userGrid.innerHTML = '<p style="color: #9ca3af;">Hələ heç bir istifadəçi yoxdur.</p>';
       }
     }
 
@@ -371,26 +224,18 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(sectionId).classList.add('active');
       btn.classList.add('active');
-
-      if (sectionId === 'friends') {
-        loadUsers();
-      }
+      if (sectionId === 'friends') loadUsers();
     }
 
+    // Səhifə yüklənəndə
     window.addEventListener('DOMContentLoaded', () => {
       const savedUser = localStorage.getItem('currentUser');
       if (savedUser) {
         try {
           const user = JSON.parse(savedUser);
+          applyUserSession(user);
           document.getElementById('authModal').style.display = 'none';
-          if (document.getElementById('userName')) document.getElementById('userName').innerText = user.name;
-          if (document.getElementById('userAge')) document.getElementById('userAge').innerText = "Yaş: " + user.age;
-          if (user.avatar && document.getElementById('userAvatar')) {
-            document.getElementById('userAvatar').src = user.avatar;
-          }
-        } catch (e) {
-          console.error(e);
-        }
+        } catch (e) {}
       }
       loadUsers();
     });
