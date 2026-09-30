@@ -116,8 +116,7 @@
       </div>
     </div>
   </div>
-
-  <script>
+<script>
   let uploadedAvatarBase64 = "https://via.placeholder.com/150";
 
   function handleImageUpload(event) {
@@ -159,35 +158,46 @@
           document.getElementById('userAvatar').src = uploadedAvatarBase64;
         }
         document.getElementById('authModal').style.display = 'none';
-        loadUsers();
+        
+        // Məlumatı bazaya yazan kimi siyahını yeniləyirik
+        await loadUsers();
       }
     } catch (err) {
       alert("Şəbəkə xətası baş verdi.");
     }
   }
 
+  // İstifadəçiləri bazadan çəkən funksiya
   async function loadUsers() {
-    const { data: users, error } = await supabase.from('users').select('*');
-    if (error) {
-      console.error("Xəta:", error);
-      return;
+    try {
+      const { data: users, error } = await supabase.from('users').select('*');
+      if (error) {
+        console.error("Supabase xətası:", error.message);
+        return;
+      }
+
+      const userGrid = document.getElementById('userGrid');
+      if (!userGrid) return;
+
+      userGrid.innerHTML = '';
+      if (users && users.length > 0) {
+        users.forEach(u => {
+          userGrid.innerHTML += `
+            <div class="user-card">
+              <img src="https://via.placeholder.com/150" alt="Avatar">
+              <div class="user-info">
+                <h4>${u.full_name || 'İstifadəçi'}</h4>
+                <p>Yaş: ${u.age || '-'}</p>
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        userGrid.innerHTML = '<p style="color: #9ca3af;">Hələ heç bir istifadəçi qeydiyyatdan keçməyib.</p>';
+      }
+    } catch (e) {
+      console.error(e);
     }
-
-    const userGrid = document.getElementById('userGrid');
-    if (!userGrid) return;
-
-    userGrid.innerHTML = '';
-    users.forEach(u => {
-      userGrid.innerHTML += `
-        <div class="user-card">
-          <img src="https://via.placeholder.com/150" alt="Avatar">
-          <div class="user-info">
-            <h4>${u.full_name}</h4>
-            <p>Yaş: ${u.age || '-'}</p>
-          </div>
-        </div>
-      `;
-    });
   }
 
   function showSection(sectionId, btn) {
@@ -201,8 +211,10 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', loadUsers);
-</script>>
-  
+  // Səhifə açılan kimi avtomatik istifadəçiləri bazadan yükləyirik
+  window.addEventListener('DOMContentLoaded', () => {
+    loadUsers();
+  });
+</script>
 </body>
 </html>
