@@ -128,43 +128,39 @@
         reader.readAsDataURL(file);
       }
     }
+async function register() {
+  const name = document.getElementById('regName')?.value || '';
+  const age = document.getElementById('regAge')?.value || '';
+  const email = document.getElementById('regEmail')?.value || '';
+  const password = document.getElementById('regPass')?.value || '';
 
-    async function register() {
-      const name = document.getElementById('regName')?.value || '';
-      const age = document.getElementById('regAge')?.value || '';
-      const email = document.getElementById('regEmail')?.value || '';
-      const password = document.getElementById('regPass')?.value || '';
+  if (!name || !email || !password) {
+    alert("Lütfən Ad, E-poçt və Şifrə xanalarını doldurun!");
+    return;
+  }
 
-      if (!name || !email || !password) {
-        alert("Lütfən Ad, E-poçt və Şifrə xanalarını doldurun!");
-        return;
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .insert([
+        { full_name: name, age: age ? parseInt(age) : null, email: email, password: password }
+      ]);
+
+    if (error) {
+      alert("Xəta baş verdi: " + error.message);
+    } else {
+      alert("Təbrik edirik! Qeydiyyatınız uğurla Supabase bazasına yazıldı.");
+      document.getElementById('userName').innerText = name;
+      document.getElementById('userAge').innerText = "Yaş: " + age;
+      if (uploadedAvatarBase64) {
+        document.getElementById('userAvatar').src = uploadedAvatarBase64;
       }
-
-      try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ full_name: name, age: age ? parseInt(age) : null, email, password })
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-          alert("Təbrik edirik! Qeydiyyatınız uğurla Neon bazasına yazıldı.");
-          document.getElementById('userName').innerText = name;
-          document.getElementById('userAge').innerText = "Yaş: " + age;
-          if (uploadedAvatarBase64) {
-            document.getElementById('userAvatar').src = uploadedAvatarBase64;
-          }
-          document.getElementById('authModal').style.display = 'none';
-        } else {
-          alert("Xəta baş verdi: " + data.error);
-        }
-      } catch (err) {
-        alert("Şəbəkə xətası baş verdi.");
-      }
+      document.getElementById('authModal').style.display = 'none';
     }
-
+  } catch (err) {
+    alert("Şəbəkə xətası baş verdi.");
+  }
+}
     function showSection(sectionId, btn) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
