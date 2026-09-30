@@ -167,6 +167,41 @@ async function register() {
       document.getElementById(sectionId).classList.add('active');
       btn.classList.add('active');
     }
-  </script>
+  </script// Bütün istifadəçiləri Supabase-dən çəkib göstərən funksiya
+async function loadUsers() {
+  const { data: users, error } = await supabase.from('users').select('*');
+  if (error) {
+    console.error("Xəta:", error);
+    return;
+  }
+
+  const userGrid = document.getElementById('userGrid');
+  if (!userGrid) return;
+
+  userGrid.innerHTML = '';
+  users.forEach(u => {
+    userGrid.innerHTML += `
+      <div class="user-card">
+        <img src="https://via.placeholder.com/150" alt="Avatar">
+        <div class="user-info">
+          <h4>${u.full_name}</h4>
+          <p>Yaş: ${u.age || '-'}</p>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// "Bütün İstifadəçilər" bölməsinə keçəndə siyahını yeniləyək
+const originalShowSection = showSection;
+showSection = function(sectionId, btn) {
+  originalShowSection(sectionId, btn);
+  if (sectionId === 'friends') {
+    loadUsers();
+  }
+};
+
+// Səhifə açılan kimi istifadəçiləri yüklə
+document.addEventListener('DOMContentLoaded', loadUsers);>
 </body>
 </html>
