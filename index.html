@@ -1,682 +1,170 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamePortal - Oyun və Sosial Platforma</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        body {
-            background-color: #0b0f19;
-            color: #e2e8f0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Qeydiyyat Modal Frame */
-        .auth-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(11, 15, 25, 0.95);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .auth-box {
-            background: #151c2c;
-            border: 1px solid #1e293b;
-            padding: 35px;
-            border-radius: 16px;
-            width: 400px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            text-align: center;
-        }
-
-        .auth-box h2 {
-            margin-bottom: 20px;
-            color: #38bdf8;
-            font-size: 24px;
-        }
-
-        .auth-box input[type="text"],
-        .auth-box input[type="number"],
-        .auth-box input[type="email"],
-        .auth-box input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            outline: none;
-        }
-
-        /* JPG Şəkil Yükləmə Düyməsi */
-        .file-upload-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px;
-            margin: 10px 0;
-            background: #1e293b;
-            border: 1px dashed #38bdf8;
-            border-radius: 8px;
-            color: #38bdf8;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .file-upload-label input {
-            display: none;
-        }
-
-        .auth-box button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background: linear-gradient(135deg, #0284c7, #2563eb);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* Sidebar - Sol Panel */
-        .sidebar {
-            width: 280px;
-            background-color: #111827;
-            border-right: 1px solid #1f2937;
-            display: flex;
-            flex-direction: column;
-            padding: 24px 16px;
-        }
-
-        .sidebar .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #38bdf8;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 32px;
-            padding-left: 8px;
-        }
-
-        .nav-btn {
-            background: transparent;
-            color: #9ca3af;
-            border: none;
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 500;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            transition: all 0.2s;
-        }
-
-        .nav-btn:hover {
-            background-color: #1f2937;
-            color: #f3f4f6;
-        }
-
-        .nav-btn.active {
-            background: linear-gradient(90deg, #0284c7, #2563eb);
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        /* Mesaj Bildiriş Nişanı (Badge) */
-        .badge {
-            background: #ef4444;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 7px;
-            border-radius: 12px;
-            margin-left: auto;
-            display: none;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 32px;
-            overflow-y: auto;
-            background: #0b0f19;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #f8fafc;
-            margin-bottom: 24px;
-        }
-
-        /* Profil Card */
-        .profile-card {
-            background: #111827;
-            border: 1px solid #1f2937;
-            padding: 32px;
-            border-radius: 16px;
-            max-width: 420px;
-            text-align: center;
-        }
-
-        .profile-avatar {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #0284c7;
-            margin-bottom: 16px;
-        }
-
-        /* İstifadəçilər və Dostlar Siyahısı */
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-        }
-
-        .user-card {
-            background: #111827;
-            border: 1px solid #1f2937;
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .user-card img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-info h4 {
-            font-size: 15px;
-            color: #f3f4f6;
-        }
-
-        .user-info p {
-            font-size: 12px;
-            color: #9ca3af;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 6px;
-            margin-top: 8px;
-        }
-
-        .action-btn {
-            padding: 6px 10px;
-            font-size: 12px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-add { background: #10b981; color: white; }
-        .btn-msg { background: #0284c7; color: white; }
-
-        /* Direkt Çat İnterfeysi */
-        .direct-wrapper {
-            display: flex;
-            gap: 20px;
-            height: 520px;
-        }
-
-        .friends-sidebar {
-            width: 220px;
-            background: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 16px;
-            padding: 12px;
-            overflow-y: auto;
-        }
-
-        .friends-sidebar h3 {
-            font-size: 14px;
-            color: #9ca3af;
-            margin-bottom: 12px;
-            padding-left: 4px;
-        }
-
-        .chat-friend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .chat-friend-item:hover, .chat-friend-item.active {
-            background: #1f2937;
-        }
-
-        .chat-friend-item img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-        }
-
-        .chat-container {
-            flex: 1;
-            background: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            padding: 14px 20px;
-            background: #1f2937;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .message-item {
-            max-width: 70%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 14px;
-        }
-
-        .message-item.sent {
-            align-self: flex-end;
-            background: #0284c7;
-            color: #fff;
-            border-bottom-right-radius: 2px;
-        }
-
-        .message-item.received {
-            align-self: flex-start;
-            background: #1f2937;
-            color: #e2e8f0;
-            border-bottom-left-radius: 2px;
-        }
-
-        .seen-status {
-            font-size: 10px;
-            color: #cbd5e1;
-            text-align: right;
-            margin-top: 4px;
-        }
-
-        .chat-input-area {
-            display: flex;
-            padding: 14px;
-            background: #1f2937;
-            gap: 10px;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid #374151;
-            background: #111827;
-            color: #fff;
-            outline: none;
-        }
-
-        .chat-input-area button {
-            padding: 10px 18px;
-            background: #0284c7;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GamePortal - Oyun və Sosial Platforma</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    body { background-color: #0b0f19; color: #e2e8f0; display: flex; height: 100vh; overflow: hidden; }
+    .auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .auth-box { background: #151c2c; border: 1px solid #1e293b; padding: 35px; border-radius: 16px; width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
+    .auth-box h2 { margin-bottom: 20px; color: #38bdf8; font-size: 24px; }
+    .auth-box input[type="text"], .auth-box input[type="number"], .auth-box input[type="email"], .auth-box input[type="password"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; outline: none; }
+    .file-upload-label { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; margin: 10px 0; background: #1e293b; border: 1px dashed #38bdf8; border-radius: 8px; color: #38bdf8; cursor: pointer; font-size: 14px; }
+    .file-upload-label input { display: none; }
+    .auth-box button { width: 100%; padding: 12px; margin-top: 15px; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .sidebar { width: 280px; background-color: #111827; border-right: 1px solid #1f2937; display: flex; flex-direction: column; padding: 24px 16px; }
+    .sidebar .brand { display: flex; align-items: center; gap: 12px; color: #38bdf8; font-size: 20px; font-weight: 700; margin-bottom: 32px; padding-left: 8px; }
+    .nav-btn { background: transparent; color: #9ca3af; border: none; padding: 14px 16px; text-align: left; font-size: 15px; font-weight: 500; border-radius: 10px; cursor: pointer; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; position: relative; transition: all 0.2s; }
+    .nav-btn:hover { background-color: #1f2937; color: #f3f4f6; }
+    .nav-btn.active { background: linear-gradient(90deg, #0284c7, #2563eb); color: #ffffff; font-weight: 600; }
+    .badge { background: #ef4444; color: white; font-size: 11px; font-weight: bold; padding: 2px 7px; border-radius: 12px; margin-left: auto; display: none; }
+    .main-content { flex: 1; padding: 32px; overflow-y: auto; background: #0b0f19; }
+    .section { display: none; }
+    .section.active { display: block; }
+    h1 { font-size: 28px; font-weight: 700; color: #f8fafc; margin-bottom: 24px; }
+    .profile-card { background: #111827; border: 1px solid #1f2937; padding: 32px; border-radius: 16px; max-width: 420px; text-align: center; }
+    .profile-avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #0284c7; margin-bottom: 16px; }
+    .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .user-card { background: #111827; border: 1px solid #1f2937; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 14px; }
+    .user-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+    .user-info { flex: 1; }
+    .user-info h4 { font-size: 15px; color: #f3f4f6; }
+    .user-info p { font-size: 12px; color: #9ca3af; }
+    .direct-wrapper { display: flex; gap: 20px; height: 520px; }
+    .friends-sidebar { width: 220px; background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 12px; overflow-y: auto; }
+    .friends-sidebar h3 { font-size: 14px; color: #9ca3af; margin-bottom: 12px; padding-left: 4px; }
+    .chat-container { flex: 1; background: #111827; border: 1px solid #1f2937; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
+    .chat-header { padding: 14px 20px; background: #1f2937; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .chat-input-area { display: flex; padding: 14px; background: #1f2937; gap: 10px; }
+    .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid #374151; background: #111827; color: #fff; outline: none; }
+    .chat-input-area button { padding: 10px 18px; background: #0284c7; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+  </style>
 </head>
 <body>
 
-    <!-- Qeydiyyat Pəncərəsi -->
-    <div class="auth-container" id="authModal">
-  <div class="auth-box">
-    <h2>Qeydiyyat</h2>
-    <input type="text" id="regName" placeholder="Ad və Soyad">
-    <input type="number" id="regAge" placeholder="Yaş">
-    <label class="file-upload-label">
-      <i class="fa-solid fa-image"></i> Profil Şəkli Seçin (JPG/PNG)
-      <input type="file" id="regImgFile" accept="image/jpeg, image/png" onchange="handleImageUpload(event)">
-    </label>
-    <input type="email" id="regEmail" placeholder="E-poçt ünvanı">
-    <input type="password" id="regPass" placeholder="Şifrə">
-    <button onclick="register()">Hesab Yaradın</button>
+  <!-- Qeydiyyat Pəncərəsi -->
+  <div class="auth-container" id="authModal">
+    <div class="auth-box">
+      <h2>Qeydiyyat</h2>
+      <input type="text" id="regName" placeholder="Ad və Soyad">
+      <input type="number" id="regAge" placeholder="Yaş">
+      <label class="file-upload-label">
+        <i class="fa-solid fa-image"></i> Profil Şəkli Seçin (JPG/PNG)
+        <input type="file" id="regImgFile" accept="image/jpeg, image/png" onchange="handleImageUpload(event)">
+      </label>
+      <input type="email" id="regEmail" placeholder="E-poçt ünvanı">
+      <input type="password" id="regPass" placeholder="Şifrə">
+      <button onclick="register()">Hesab Yaradın</button>
+    </div>
   </div>
-</div>
-            <!-- JPG/PNG Yükləmə Düyməsi -->
-            <label class="file-upload-label">
-                <i class="fa-solid fa-image"></i> Profil Şəkli Seçin (JPG/PNG)
-                <input type="file" id="regImgFile" accept="image/jpeg, image/png" onchange="handleImageUpload(event)">
-            </label>
 
-            <input type="email" id="regEmail" placeholder="E-poçt ünvanı">
-            <input type="password" id="regPass" placeholder="Şifrə">
-            <button onclick="register()">Hesab Yaradın</button>
-        </div>
+  <!-- Sol Panel -->
+  <div class="sidebar">
+    <div class="brand"><i class="fa-solid fa-gamepad"></i> GamePortal</div>
+    <button class="nav-btn active" onclick="showSection('profile', this)"><i class="fa-solid fa-user"></i> Şəxsi Kabinet</button>
+    <button class="nav-btn" onclick="showSection('friends', this)"><i class="fa-solid fa-users"></i> Bütün İstifadəçilər</button>
+    <button class="nav-btn" onclick="showSection('game', this)"><i class="fa-solid fa-dice"></i> Oyun Sahəsi</button>
+    <button class="nav-btn" onclick="showSection('direct', this)"><i class="fa-solid fa-paper-plane"></i> Direkt <span class="badge" id="msgBadge">0</span></button>
+  </div>
+
+  <!-- Əsas Panel -->
+  <div class="main-content">
+    <div id="profile" class="section active">
+      <h1>Şəxsi Kabinet</h1>
+      <div class="profile-card">
+        <img src="https://via.placeholder.com/150" id="userAvatar" class="profile-avatar" alt="Avatar">
+        <h2 id="userName">İstifadəçi Adı</h2>
+        <p id="userAge">Yaş: -</p>
+      </div>
     </div>
 
-    <!-- Sol Panel (Sidebar) -->
-    <div class="sidebar">
-        <div class="brand">
-            <i class="fa-solid fa-gamepad"></i> GamePortal
-        </div>
-        <button class="nav-btn active" onclick="showSection('profile', this)">
-            <i class="fa-solid fa-user"></i> Şəxsi Kabinet
-        </button>
-        <button class="nav-btn" onclick="showSection('friends', this)">
-            <i class="fa-solid fa-users"></i> Bütün İstifadəçilər
-        </button>
-        <button class="nav-btn" onclick="showSection('game', this)">
-            <i class="fa-solid fa-dice"></i> Oyun Sahəsi
-        </button>
-        <button class="nav-btn" onclick="showSection('direct', this)">
-            <i class="fa-solid fa-paper-plane"></i> Direkt
-            <!-- Mesaj Sayı Nişanı -->
-            <span class="badge" id="msgBadge">0</span>
-        </button>
+    <div id="friends" class="section">
+      <h1>Qeydiyyatdan Keçən İstifadəçilər</h1>
+      <div class="user-grid" id="userGrid"></div>
     </div>
 
-    <!-- Əsas Panel -->
-    <div class="main-content">
-
-        <!-- Şəxsi Kabinet -->
-        <div id="profile" class="section active">
-            <h1>Şəxsi Kabinet</h1>
-            <div class="profile-card">
-                <img src="https://via.placeholder.com/150" id="userAvatar" class="profile-avatar" alt="Avatar">
-                <h2 id="userName">İstifadəçi Adı</h2>
-                <p id="userAge">Yaş: -</p>
-            </div>
-        </div>
-
-        <!-- Bütün İstifadəçilər və Dostluq -->
-        <div id="friends" class="section">
-            <h1>Qeydiyyatdan Keçən İstifadəçilər</h1>
-            <div class="user-grid" id="userGrid">
-                <!-- Dinamik yüklənəcək -->
-            </div>
-        </div>
-
-        <!-- Oyun Sahəsi -->
-        <div id="game" class="section">
-            <h1>Oyun Sahəsi</h1>
-            <p style="color: #9ca3af;">Tezliklə oyunlar əlavə olunacaq.</p>
-        </div>
-
-        <!-- Direkt (Ayrıca Dostlar və Yazışma Bölməsi) -->
-        <div id="direct" class="section">
-            <h1>Direkt (Yazışmalar)</h1>
-            <div class="direct-wrapper">
-                
-                <!-- Sol tərəfdə Dostların Siyahısı -->
-                <div class="friends-sidebar">
-                    <h3>Dostlarınız</h3>
-                    <div id="friendsChatList">
-                        <!-- Dostlar siyahısı gələcək -->
-                    </div>
-                </div>
-
-                <!-- Sağ tərəfdə Çat Çərçivəsi -->
-                <div class="chat-container">
-                    <div class="chat-header" id="chatHeader">
-                        <span>Hər hansı bir dostu seçin</span>
-                    </div>
-                    <div class="chat-messages" id="chatMessages">
-                        <p style="color: #6b7280; text-align: center; margin-top: auto; margin-bottom: auto;">Yazışmaq üçün sol tərəfdən istifadəçi seçin.</p>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="msgInput" placeholder="Mesajınızı yazın...">
-                        <button onclick="sendMessage()">Göndər</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
+    <div id="game" class="section">
+      <h1>Oyun Sahəsi</h1>
+      <p style="color: #9ca3af;">Tezliklə oyunlar əlavə olunacaq.</p>
     </div>
 
-    <script>
-        let uploadedAvatarBase64 = "https://via.placeholder.com/150";
-        let unreadCount = 0;
-        let activeChatUser = null;
+    <div id="direct" class="section">
+      <h1>Direkt (Yazışmalar)</h1>
+      <div class="direct-wrapper">
+        <div class="friends-sidebar">
+          <h3>Dostlarınız</h3>
+          <div id="friendsChatList"></div>
+        </div>
+        <div class="chat-container">
+          <div class="chat-header"><span>Hər hansı bir dostu seçin</span></div>
+          <div class="chat-messages"><p style="color: #6b7280; text-align: center; margin-top: auto; margin-bottom: auto;">Yazışmaq üçün sol tərəfdən istifadəçi seçin.</p></div>
+          <div class="chat-input-area">
+            <input type="text" placeholder="Mesajınızı yazın...">
+            <button>Göndər</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        // Nümunə İstifadəçilər Baza Şablonu
-        let users = [
-            { id: 1, name: "Əli Məmmədov", age: 21, img: "https://via.placeholder.com/150", isFriend: true },
-            { id: 2, name: "Leyla Hüseynova", age: 19, img: "https://via.placeholder.com/150", isFriend: false },
-            { id: 3, name: "Rauf Qasımov", age: 24, img: "https://via.placeholder.com/150", isFriend: false }
-        ];
+  <script>
+    let uploadedAvatarBase64 = "https://via.placeholder.com/150";
 
-        // 1. JPG / PNG Şəkil Oxuma Funksiyası
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedAvatarBase64 = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // 2. İstifadəçilər Bölməsi
-        function renderUsers() {
-            const grid = document.getElementById('userGrid');
-            grid.innerHTML = "";
-
-            users.forEach(u => {
-                grid.innerHTML += `
-                    <div class="user-card">
-                        <img src="${u.img}">
-                        <div class="user-info">
-                            <h4>${u.name}</h4>
-                            <p>Yaş: ${u.age}</p>
-                            <div class="btn-group">
-                                ${u.isFriend 
-                                    ? `<button class="action-btn btn-msg" onclick="openDirectWith(${u.id})">Mesaj Yaz</button>` 
-                                    : `<button class="action-btn btn-add" onclick="addFriend(${u.id})">Dostluq Göndər</button>
-                                       <button class="action-btn btn-msg" onclick="sendOneTimeMsg(${u.id})">1-dəfəlik Mesaj</button>`
-                                }
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function addFriend(id) {
-            const u = users.find(x => x.id === id);
-            if(u) {
-                u.isFriend = true;
-                alert(`${u.name} ilə dostluq quruldu!`);
-                renderUsers();
-                renderChatFriends();
-            }
-        }
-
-        function sendOneTimeMsg(id) {
-            const u = users.find(x => x.id === id);
-            alert(`${u.name} istifadəçisinə 1-dəfəlik xüsusi mesaj istəyi göndərildi.`);
-        }
-
-        // 3. Direkt - Dostları Siyahılamaq
-        function renderChatFriends() {
-            const list = document.getElementById('friendsChatList');
-            list.innerHTML = "";
-
-            const friends = users.filter(u => u.isFriend);
-            friends.forEach(f => {
-                list.innerHTML += `
-                    <div class="chat-friend-item" onclick="selectChatUser(${f.id})">
-                        <img src="${f.img}">
-                        <span>${f.name}</span>
-                    </div>
-                `;
-            });
-        }
-
-        function selectChatUser(id) {
-            const u = users.find(x => x.id === id);
-            activeChatUser = u;
-            document.getElementById('chatHeader').innerHTML = `<img src="${u.img}" style="width:28px;height:28px;border-radius:50%;"> ${u.name}`;
-            
-            // Mesajlar oxundu kimi qeyd olunur
-            document.getElementById('chatMessages').innerHTML = `
-                <div class="message-item received">
-                    Salam! Necəsən?
-                </div>
-            `;
-            
-            // Xəbərdarlıq nişanını sıfırla
-            unreadCount = 0;
-            updateBadge();
-        }
-
-        function openDirectWith(id) {
-            showSection('direct', document.querySelectorAll('.nav-btn')[3]);
-            selectChatUser(id);
-        }
-
-        // 4 və 5. Oxundu Statusu və Badge (Nişan) Yenilənməsi
-        function sendMessage() {
-            const input = document.getElementById('msgInput');
-            const messages = document.getElementById('chatMessages');
-
-            if(input.value.trim() !== "") {
-                const msg = document.createElement('div');
-                msg.className = "message-item sent";
-                msg.innerHTML = `
-                    ${input.value}
-                    <div class="seen-status"><i class="fa-solid fa-check-double"></i> Goruldu</div>
-                `;
-                
-                messages.appendChild(msg);
-                input.value = "";
-                messages.scrollTop = messages.scrollHeight;
-            }
-        }
-
-        function receiveNewMessage(text) {
-            unreadCount++;
-            updateBadge();
-        }
-
-        function updateBadge() {
-            const badge = document.getElementById('msgBadge');
-            if(unreadCount > 0) {
-                badge.innerText = unreadCount;
-                badge.style.display = "inline-block";
-            } else {
-                badge.style.display = "none";
-            }
-        }
-
-        function showSection(sectionId, btn) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(sectionId).classList.add('active');
-            btn.classList.add('active');
-        }
-    </script> 
-   <script>
-  // Düyməyə kliklədikdə qeydiyyatı bazaya göndərir
-  document.addEventListener('DOMContentLoaded', () => {
-    const regBtn = document.querySelector('.auth-box button');
-
-    if (regBtn) {
-      regBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        const inputs = document.querySelectorAll('.auth-box input');
-        const full_name = inputs[0]?.value || '';
-        const age = inputs[1]?.value || '';
-        const email = inputs[2]?.value || '';
-        const password = inputs[3]?.value || '';
-
-        if (!full_name || !email || !password) {
-          alert("Lütfən Ad, E-poçt və Şifrə xanalarını doldurun!");
-          return;
-        }
-
-        try {
-          const res = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ full_name, age, email, password })
-          });
-
-          const data = await res.json();
-
-          if (data.success) {
-            alert("Təbrik edirik! Qeydiyyatınız uğurla bazaya yazıldı.");
-          } else {
-            alert("Xəta baş verdi: " + data.error);
-          }
-        } catch (err) {
-          alert("Şəbəkə xətası baş verdi. Yenidən cəhd edin.");
-        }
-      });
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) { uploadedAvatarBase64 = e.target.result; };
+        reader.readAsDataURL(file);
+      }
     }
-  });
+
+    async function register() {
+      const name = document.getElementById('regName')?.value || '';
+      const age = document.getElementById('regAge')?.value || '';
+      const email = document.getElementById('regEmail')?.value || '';
+      const password = document.getElementById('regPass')?.value || '';
+
+      if (!name || !email || !password) {
+        alert("Lütfən Ad, E-poçt və Şifrə xanalarını doldurun!");
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name: name, age: age ? parseInt(age) : null, email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          alert("Təbrik edirik! Qeydiyyatınız uğurla Neon bazasına yazıldı.");
+          document.getElementById('userName').innerText = name;
+          document.getElementById('userAge').innerText = "Yaş: " + age;
+          if (uploadedAvatarBase64) {
+            document.getElementById('userAvatar').src = uploadedAvatarBase64;
+          }
+          document.getElementById('authModal').style.display = 'none';
+        } else {
+          alert("Xəta baş verdi: " + data.error);
+        }
+      } catch (err) {
+        alert("Şəbəkə xətası baş verdi.");
+      }
+    }
+
+    function showSection(sectionId, btn) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
 </body>
 </html>
