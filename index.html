@@ -32,7 +32,14 @@
       width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px;
       border: 1px solid #334155; background: #0f172a; color: #fff; outline: none;
     }
-    .auth-box button {
+    .file-label {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px; margin: 10px 0; background: #1e293b; border: 1px dashed #38bdf8;
+      border-radius: 8px; color: #38bdf8; cursor: pointer; font-size: 14px;
+    }
+    .file-label input { display: none; }
+    
+    .auth-box button, .btn-primary {
       width: 100%; padding: 12px; margin-top: 12px;
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
@@ -58,9 +65,9 @@
     
     .profile-card {
       background: #111827; border: 1px solid #1f2937; padding: 32px;
-      border-radius: 16px; max-width: 420px; text-align: center;
+      border-radius: 16px; max-width: 420px; text-align: center; position: relative;
     }
-    .profile-avatar { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #0284c7; margin-bottom: 16px; }
+    .profile-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #0284c7; margin-bottom: 16px; }
     
     .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
     .user-card { background: #111827; border: 1px solid #1f2937; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 14px; }
@@ -78,6 +85,12 @@
       <input type="number" id="regAge" placeholder="Yaşınız">
       <input type="email" id="regEmail" placeholder="E-poçt ünvanı">
       <input type="password" id="regPass" placeholder="Şifrə">
+      
+      <label class="file-label">
+        <i class="fa-solid fa-camera"></i> Profil Şəkli Seçin
+        <input type="file" accept="image/*" onchange="previewAvatar(event)">
+      </label>
+
       <button onclick="register()">Hesab Yaradın</button>
       <div class="toggle-auth" onclick="toggleAuth('login')">Artıq hesabınız var? Daxil olun</div>
     </div>
@@ -107,7 +120,12 @@
       <div class="profile-card">
         <img src="https://via.placeholder.com/150" id="userAvatar" class="profile-avatar" alt="Avatar">
         <h2 id="userName" style="color: #f8fafc; font-size: 20px;">İstifadəçi</h2>
-        <p id="userAge" style="color: #9ca3af; margin-top: 6px;">Yaş: -</p>
+        <p id="userAge" style="color: #9ca3af; margin-top: 6px; margin-bottom: 20px;">Yaş: -</p>
+        
+        <label class="file-label" style="margin: 0 auto; max-width: 200px;">
+          <i class="fa-solid fa-pen"></i> Şəkli Dəyiş
+          <input type="file" accept="image/*" onchange="updateProfileAvatar(event)">
+        </label>
       </div>
     </div>
 
@@ -118,6 +136,38 @@
   </div>
 
   <script>
+    let uploadedAvatarBase64 = "https://via.placeholder.com/150";
+
+    function previewAvatar(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedAvatarBase64 = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function updateProfileAvatar(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const newAvatar = e.target.result;
+          document.getElementById('userAvatar').src = newAvatar;
+          
+          const savedUser = localStorage.getItem('currentUser');
+          if (savedUser) {
+            const user = JSON.parse(savedUser);
+            user.avatar = newAvatar;
+            localStorage.setItem('currentUser', JSON.stringify(user));
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
     function toggleAuth(mode) {
       if (mode === 'login') {
         document.getElementById('registerBox').style.display = 'none';
@@ -128,7 +178,6 @@
       }
     }
 
-    // Qeydiyyat
     async function register() {
       const name = document.getElementById('regName').value;
       const age = document.getElementById('regAge').value;
@@ -141,18 +190,17 @@
       }
 
       const { data, error } = await supabase.from('users').insert([
-        { full_name: name, age: age ? parseInt(age) : null, email: email, password: password }
+        { full_name: name, age: age ? parseInt(age) : null, email: email, password: password, avatar_url: uploadedAvatarBase64 }
       ]).select();
 
       if (error) {
         alert("Xəta: " + error.message);
       } else {
         alert("Qeydiyyat uğurludur!");
-        setUserSession({ name: name, age: age, email: email });
+        setUserSession({ name: name, age: age, email: email, avatar: uploadedAvatarBase64 });
       }
     }
 
-    // Daxil Olma (Login)
     async function login() {
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPass').value;
@@ -172,11 +220,10 @@
         alert("E-poçt və ya şifrə yanlışdır!");
       } else {
         const u = users[0];
-        setUserSession({ name: u.full_name, age: u.age, email: u.email });
+        setUserSession({ name: u.full_name, age: u.age, email: u.email, avatar: u.avatar_url });
       }
     }
 
-    // Sessiyanı yaddaşda saxla
     function setUserSession(userData) {
       localStorage.setItem('currentUser', JSON.stringify(userData));
       applyUserSession(userData);
@@ -187,15 +234,16 @@
     function applyUserSession(user) {
       document.getElementById('userName').innerText = user.name || 'İstifadəçi';
       document.getElementById('userAge').innerText = "Yaş: " + (user.age || '-');
+      if (user.avatar && user.avatar !== '') {
+        document.getElementById('userAvatar').src = user.avatar;
+      }
     }
 
-    // Çıxış et
     function logout() {
       localStorage.removeItem('currentUser');
       location.reload();
     }
 
-    // Bütün İstifadəçiləri Çək
     async function loadUsers() {
       const { data: users, error } = await supabase.from('users').select('*');
       const userGrid = document.getElementById('userGrid');
@@ -206,7 +254,7 @@
         users.forEach(u => {
           userGrid.innerHTML += `
             <div class="user-card">
-              <img src="https://via.placeholder.com/150" alt="Avatar">
+              <img src="${u.avatar_url || 'https://via.placeholder.com/150'}" alt="Avatar">
               <div class="user-info">
                 <h4>${u.full_name || 'İstifadəçi'}</h4>
                 <p>Yaş: ${u.age || '-'}</p>
@@ -227,7 +275,6 @@
       if (sectionId === 'friends') loadUsers();
     }
 
-    // Səhifə yüklənəndə yoxla
     window.addEventListener('DOMContentLoaded', () => {
       const savedUser = localStorage.getItem('currentUser');
       if (savedUser) {
